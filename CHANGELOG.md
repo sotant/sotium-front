@@ -4,6 +4,12 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-02-25
+
+### Fixed
+- Se eliminó el uso de `next/font/google` en `layout` para evitar dependencia de descarga externa en render SSR y reducir errores de hidratación en desarrollo.
+- Se ajustaron las fuentes globales a tipografías del sistema en `globals.css`, manteniendo render determinista entre servidor y cliente.
+
 ## [0.2.2] - 2026-02-25
 
 ### Fixed
