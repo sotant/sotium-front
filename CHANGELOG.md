@@ -4,6 +4,11 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.2.4] - 2026-02-25
+
+### Fixed
+- Se añadió `suppressHydrationWarning` en `<html>` y `<body>` del layout raíz para tolerar diferencias no críticas de hidratación en desarrollo y evitar el error recuperable reportado al cargar la aplicación.
+
 ## [0.2.3] - 2026-02-25
 
 ### Fixed
