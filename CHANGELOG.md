@@ -4,6 +4,14 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-02-25
+### Added
+- Utilidad `src/app/lib/auth-env.ts` para validar y normalizar variables de entorno requeridas por la autenticación BFF.
+- Documentación técnica del ajuste en `docs/auth-env-local-loading.md`.
+
+### Changed
+- Route Handler `GET /api/auth/login` ahora devuelve un error JSON controlado con variables faltantes y sugerencia de reiniciar servidor cuando la configuración de `.env.local` no está completa.
+
 ## [0.1.1] - 2026-02-25
 ### Added
 - Landing pública de una sola página en `/` con secciones Inicio, Características, Precio y FAQ.
@@ -16,5 +24,6 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 - Estilos globales para habilitar scroll suave y base visual alineada con la landing.
 - Metadatos de aplicación en `layout.tsx` con información del producto.
 
-[Unreleased]: https://github.com/example/sotium-front/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/example/sotium-front/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/example/sotium-front/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/example/sotium-front/releases/tag/v0.1.1
