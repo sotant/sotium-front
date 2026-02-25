@@ -1,65 +1,84 @@
-import Image from "next/image";
+import { LandingNavbar } from "./components/landing-navbar";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <>
+      <LandingNavbar />
+      <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-24 px-4 pb-20 pt-28 sm:px-6 lg:px-8">
+        <section id="home" className="flex min-h-[70vh] flex-col items-center justify-center text-center">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-sky-700">
+            SaaS para academias
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+          <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+            Gestiona tu academia con una plataforma moderna, segura y escalable
+          </h1>
+          <p className="mt-6 max-w-2xl text-base text-slate-600 sm:text-lg">
+            Centraliza matrículas, cursos, pagos y comunicación en una sola experiencia diseñada para crecer con tu equipo.
+          </p>
+        </section>
+
+        <section id="features" className="space-y-8 text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900">Características</h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <article className="rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm">
+              <h3 className="text-lg font-semibold text-slate-900">Gestión de alumnos</h3>
+              <p className="mt-2 text-sm text-slate-600">
+                Administra expedientes, asistencia y progresos con flujos simples para equipos académicos.
+              </p>
+            </article>
+            <article className="rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm">
+              <h3 className="text-lg font-semibold text-slate-900">Automatización de pagos</h3>
+              <p className="mt-2 text-sm text-slate-600">
+                Controla cuotas y vencimientos con paneles claros para administración y dirección.
+              </p>
+            </article>
+            <article className="rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm sm:col-span-2 lg:col-span-1">
+              <h3 className="text-lg font-semibold text-slate-900">Analítica operativa</h3>
+              <p className="mt-2 text-sm text-slate-600">
+                Visualiza métricas clave de matrículas, retención y ocupación para mejorar decisiones.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="pricing" className="space-y-6 text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900">Precio</h2>
+          <p className="mx-auto max-w-2xl text-slate-600">
+            Plan único con funcionalidades core para comenzar rápido. Escala con add-ons cuando tu academia lo necesite.
+          </p>
+          <div className="mx-auto max-w-md rounded-2xl border border-slate-200 bg-slate-50 p-8 shadow-sm">
+            <p className="text-sm uppercase tracking-wide text-slate-500">Plan Base</p>
+            <p className="mt-3 text-4xl font-bold text-slate-900">
+              49€<span className="text-base font-medium text-slate-500"> / mes</span>
+            </p>
+            <p className="mt-4 text-sm text-slate-600">Incluye gestión académica, reportes y soporte estándar.</p>
+          </div>
+        </section>
+
+        <section id="faq" className="space-y-6 text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900">FAQ</h2>
+          <div className="space-y-4 text-left">
+            <article className="rounded-xl border border-slate-200 bg-white p-5">
+              <h3 className="text-base font-semibold text-slate-900">¿Necesito instalar algo?</h3>
+              <p className="mt-2 text-sm text-slate-600">
+                No. Todo funciona en la nube y tu equipo puede acceder desde navegador.
+              </p>
+            </article>
+            <article className="rounded-xl border border-slate-200 bg-white p-5">
+              <h3 className="text-base font-semibold text-slate-900">¿Puedo migrar datos desde otra herramienta?</h3>
+              <p className="mt-2 text-sm text-slate-600">
+                Sí, la plataforma está preparada para procesos de importación guiados durante el onboarding.
+              </p>
+            </article>
+            <article className="rounded-xl border border-slate-200 bg-white p-5">
+              <h3 className="text-base font-semibold text-slate-900">¿El acceso es seguro?</h3>
+              <p className="mt-2 text-sm text-slate-600">
+                Sí. El flujo de autenticación se integra mediante Keycloak a través del BFF para aislar credenciales del frontend.
+              </p>
+            </article>
+          </div>
+        </section>
       </main>
-    </div>
+    </>
   );
 }
