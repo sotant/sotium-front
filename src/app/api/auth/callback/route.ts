@@ -28,7 +28,7 @@ export async function GET(request: Request): Promise<Response> {
     });
 
     // We redirect using the same origin that handled the callback to keep cookie host alignment.
-    const success = NextResponse.redirect(`${appOrigin}/me`, 302);
+    const success = NextResponse.redirect(`${appOrigin}/dashboard`, 302);
     clearAuthFlowCookie(success);
     writeSession(success, session);
     return success;

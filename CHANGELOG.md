@@ -4,6 +4,16 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-02-25
+
+### Changed
+- Flujo post-login actualizado para redirigir a `/dashboard` en lugar de `/me`.
+- Home pública ahora redirige a `/dashboard` cuando detecta sesión activa.
+- Se movió la vista protegida con datos de usuario y sidebar de logout a la nueva ruta `/dashboard`.
+
+### Added
+- Ruta de compatibilidad `/me` que redirige a `/dashboard` para evitar enlaces rotos.
+
 ## [0.1.4] - 2026-02-25
 
 ### Fixed

@@ -13,7 +13,7 @@ export default async function HomePage({
 
   // If user already has a valid BFF session cookie, we take them directly to the protected area.
   if (authenticated) {
-    redirect("/me");
+    redirect("/dashboard");
   }
 
   const query = await searchParams;
