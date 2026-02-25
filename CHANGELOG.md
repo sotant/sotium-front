@@ -4,6 +4,12 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-02-25
+
+### Fixed
+- Se reemplazó el almacenamiento de tokens en cookie por una sesión server-side en memoria con cookie HttpOnly de `session_id`, evitando pérdida de sesión por límite de tamaño de cookie durante el callback OIDC.
+- Se mantuvo la cookie transitoria OIDC cifrada para `state`, `nonce` y `code_verifier` y se preservaron los flags de seguridad (`HttpOnly`, `SameSite=Lax`, `Secure` por entorno).
+
 ## [0.2.0] - 2026-02-25
 
 ### Added

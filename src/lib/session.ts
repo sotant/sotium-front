@@ -8,6 +8,7 @@ export const OIDC_TRANSIENT_COOKIE_NAME = "sotium_oidc";
 
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 14;
 const OIDC_COOKIE_MAX_AGE_SECONDS = 60 * 10;
+const SESSION_ID_BYTES = 24;
 const IV_LENGTH = 12;
 const AUTH_TAG_LENGTH = 16;
 
@@ -25,6 +26,17 @@ type OidcTransientPayload = Readonly<{
   state: string;
   nonce: string;
 }>;
+
+type SessionRecord = Readonly<{
+  payload: SessionPayload;
+  createdAt: number;
+}>;
+
+const sessionStore =
+  (globalThis as { __sotiumSessionStore?: Map<string, SessionRecord> }).__sotiumSessionStore ??
+  new Map<string, SessionRecord>();
+
+(globalThis as { __sotiumSessionStore?: Map<string, SessionRecord> }).__sotiumSessionStore = sessionStore;
 
 function getEncryptionKey(): Buffer {
   return createHash("sha256").update(config.SESSION_SECRET, "utf8").digest();
@@ -72,54 +84,56 @@ function sessionCookieOptions(maxAge: number) {
   };
 }
 
+function createSessionId(): string {
+  return randomBytes(SESSION_ID_BYTES).toString("base64url");
+}
+
 export async function readSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies();
-  const value = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  const sessionId = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
-  if (!value) {
+  if (!sessionId) {
     return null;
   }
 
-  const decoded = decodePayload(value);
+  const record = sessionStore.get(sessionId);
 
-  if (!decoded) {
+  if (!record) {
     return null;
   }
 
-  let parsed: Partial<SessionPayload>;
+  const now = Date.now();
+  const maxAgeMs = COOKIE_MAX_AGE_SECONDS * 1000;
 
-  try {
-    parsed = JSON.parse(decoded) as Partial<SessionPayload>;
-  } catch {
+  if (record.createdAt + maxAgeMs < now) {
+    sessionStore.delete(sessionId);
     return null;
   }
 
-  if (
-    typeof parsed.accessToken !== "string" ||
-    typeof parsed.refreshToken !== "string" ||
-    typeof parsed.idToken !== "string" ||
-    typeof parsed.expiresAt !== "number"
-  ) {
-    return null;
-  }
-
-  return {
-    accessToken: parsed.accessToken,
-    refreshToken: parsed.refreshToken,
-    idToken: parsed.idToken,
-    expiresAt: parsed.expiresAt,
-  };
+  return record.payload;
 }
 
 export async function writeSession(payload: SessionPayload): Promise<void> {
   const cookieStore = await cookies();
-  const serialized = JSON.stringify(payload);
+  const previousSessionId = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  const sessionId = previousSessionId ?? createSessionId();
 
-  cookieStore.set(SESSION_COOKIE_NAME, encodePayload(serialized), sessionCookieOptions(COOKIE_MAX_AGE_SECONDS));
+  sessionStore.set(sessionId, {
+    payload,
+    createdAt: Date.now(),
+  });
+
+  cookieStore.set(SESSION_COOKIE_NAME, sessionId, sessionCookieOptions(COOKIE_MAX_AGE_SECONDS));
 }
 
 export async function clearSession(): Promise<void> {
   const cookieStore = await cookies();
+  const sessionId = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+
+  if (sessionId) {
+    sessionStore.delete(sessionId);
+  }
+
   cookieStore.delete(SESSION_COOKIE_NAME);
 }
 
