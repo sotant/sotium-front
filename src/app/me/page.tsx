@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { getEnvConfig } from "@/app/lib/bff/env";
 import type { IdentityMeResponse } from "@/app/types/auth";
 
+export const dynamic = "force-dynamic";
+
 async function getIdentityFromBff(): Promise<IdentityMeResponse> {
   const env = getEnvConfig();
   const headerStore = await headers();

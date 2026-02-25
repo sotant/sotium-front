@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { fetchIdentityMe, isIdentityMeResponse } from "@/app/lib/bff/backend";
-import { getEnvConfig } from "@/app/lib/bff/env";
 import { refreshSession } from "@/app/lib/bff/oidc";
 import { clearSession, readSessionFromCookieStore, writeSession } from "@/app/lib/bff/session";
 import type { SessionPayload } from "@/app/types/auth";
@@ -21,8 +20,8 @@ function withSessionCookie(response: NextResponse, refreshedSession: SessionPayl
   return response;
 }
 
-export async function GET(): Promise<Response> {
-  const env = getEnvConfig();
+export async function GET(request: Request): Promise<Response> {
+  const appOrigin = new URL(request.url).origin;
   const cookieStore = await cookies();
   const session = readSessionFromCookieStore(cookieStore);
 
@@ -39,7 +38,7 @@ export async function GET(): Promise<Response> {
       refreshedSession = activeSession;
     } catch (error) {
       console.error("Session refresh failed.", error);
-      const expired = NextResponse.redirect(`${env.appBaseUrl}/?error=session_expired`, 302);
+      const expired = NextResponse.redirect(`${appOrigin}/?error=session_expired`, 302);
       clearSession(expired);
       return expired;
     }
@@ -49,7 +48,7 @@ export async function GET(): Promise<Response> {
 
   if (!backendResponse.ok) {
     if (backendResponse.status === 401 || backendResponse.status === 403) {
-      const expired = NextResponse.redirect(`${env.appBaseUrl}/?error=session_expired`, 302);
+      const expired = NextResponse.redirect(`${appOrigin}/?error=session_expired`, 302);
       clearSession(expired);
       return expired;
     }

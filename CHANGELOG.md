@@ -4,6 +4,15 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-02-25
+
+### Fixed
+- Redirecciones post-login y de error de sesión ajustadas para usar el origen real de la request y evitar desalineación de host/cookies entre `localhost` y `127.0.0.1`.
+- Flujo de sesión autenticada corregido para que el usuario llegue consistentemente a `/me` tras login cuando la cookie se emite en el mismo host.
+
+### Changed
+- Página `/me` marcada como dinámica (`force-dynamic`) para evitar evaluación estática temprana de variables de entorno durante build.
+
 ## [0.1.3] - 2026-02-25
 
 ### Changed
