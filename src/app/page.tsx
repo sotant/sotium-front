@@ -21,7 +21,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const error = normalizeError(params.error);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center gap-6 px-6 py-12">
+    <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center gap-6 px-6 py-12 text-black">
       <h1 className="text-3xl font-semibold">Sotium BFF Auth MVP</h1>
 
       {error ? (

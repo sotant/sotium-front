@@ -38,8 +38,12 @@ export function createCodeChallenge(codeVerifier: string): string {
   return createHash("sha256").update(codeVerifier).digest("base64url");
 }
 
+function getAppBaseUrl(): string {
+  return config.APP_BASE_URL.endsWith("/") ? config.APP_BASE_URL.slice(0, -1) : config.APP_BASE_URL;
+}
+
 function buildRedirectUri(): string {
-  return `${config.APP_BASE_URL}/api/auth/callback`;
+  return `${getAppBaseUrl()}/api/auth/callback`;
 }
 
 function mapTokenResponse(tokens: TokenResponse): SessionTokens {
@@ -128,7 +132,7 @@ export function getLogoutUrl(idTokenHint: string): string {
   const url = new URL(realmPath("logout"));
 
   url.searchParams.set("id_token_hint", idTokenHint);
-  url.searchParams.set("post_logout_redirect_uri", `${config.APP_BASE_URL}/`);
+  url.searchParams.set("post_logout_redirect_uri", getAppBaseUrl());
   url.searchParams.set("client_id", config.KEYCLOAK_CLIENT_ID);
 
   return url.toString();

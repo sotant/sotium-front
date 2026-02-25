@@ -4,6 +4,12 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-02-25
+
+### Fixed
+- Se ajustó `post_logout_redirect_uri` para enviar `APP_BASE_URL` sin barra final, mejorando compatibilidad con validación de redirect URI en Keycloak durante RP-Initiated Logout.
+- Se forzó color de texto negro en las pantallas `/` y `/me` para mejorar legibilidad del contenido autenticado.
+
 ## [0.2.1] - 2026-02-25
 
 ### Fixed
