@@ -1,5 +1,4 @@
 import { headers } from "next/headers";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getEnvConfig } from "@/app/lib/bff/env";
 import type { IdentityMeResponse } from "@/app/types/auth";
@@ -9,7 +8,7 @@ async function getIdentityFromBff(): Promise<IdentityMeResponse> {
   const headerStore = await headers();
   const cookieHeader = headerStore.get("cookie") ?? "";
 
-  // We forward only the incoming cookies so /api/bff/me can resolve the BFF session server-side.
+  // We forward only incoming cookies so /api/bff/me can resolve BFF session on the server.
   const response = await fetch(`${env.appBaseUrl}/api/bff/me`, {
     method: "GET",
     headers: {
@@ -39,27 +38,38 @@ export default async function MePage() {
   const profile = await getIdentityFromBff();
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 px-4 py-16 sm:px-6">
-      <header className="flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">My identity</h1>
-        <a
-          href="/api/auth/logout"
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
-        >
-          Logout
-        </a>
-      </header>
+    <main className="min-h-screen bg-slate-50">
+      <div className="mx-auto grid min-h-screen w-full max-w-7xl grid-cols-1 md:grid-cols-[240px_1fr]">
+        <aside className="border-b border-slate-200 bg-white p-6 md:border-b-0 md:border-r">
+          <h1 className="text-lg font-bold tracking-tight text-slate-900">SOTIUM</h1>
+          <p className="mt-2 text-sm text-slate-600">Future menu</p>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900">Response from backend `/api/identity/me` via BFF</h2>
-        <pre className="mt-4 overflow-x-auto rounded-lg bg-slate-900 p-4 text-sm text-slate-100">
+          <nav className="mt-8">
+            {/* This will become the full academy module menu in future iterations. */}
+            <a
+              href="/api/auth/logout"
+              className="inline-flex w-full items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
+            >
+              Logout
+            </a>
+          </nav>
+        </aside>
+
+        <section className="p-6 sm:p-8">
+          <header>
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900">Identity</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Data below comes from backend endpoint <code>/api/identity/me</code> through BFF route <code>/api/bff/me</code>.
+            </p>
+          </header>
+
+          <article className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <pre className="overflow-x-auto rounded-lg bg-slate-900 p-4 text-sm text-slate-100">
 {JSON.stringify(profile, null, 2)}
-        </pre>
-      </section>
-
-      <Link href="/" className="text-sm font-medium text-sky-700 hover:text-sky-600">
-        ← Back to home
-      </Link>
+            </pre>
+          </article>
+        </section>
+      </div>
     </main>
   );
 }

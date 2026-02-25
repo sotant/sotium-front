@@ -4,6 +4,13 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-02-25
+
+### Changed
+- Home `/` ahora funciona como entrada pública estricta y redirige automáticamente a `/me` cuando existe sesión activa.
+- Página protegida `/me` rediseñada con barra lateral izquierda (base de menú futuro) con opción `Logout`.
+- Vista de `/me` enfocada en mostrar los datos de identidad obtenidos desde backend a través de `/api/bff/me`.
+
 ## [0.1.2] - 2026-02-25
 
 ### Added
