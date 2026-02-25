@@ -4,6 +4,23 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-02-25
+
+### Added
+- Flujo completo de autenticación OIDC en BFF: login con PKCE/state/nonce, callback con intercambio de código y logout con RP-Initiated Logout.
+- Endpoint BFF `GET /api/bff/me` que usa sesión server-side, hace refresh de token silencioso y consume `GET /api/identity/me` en backend.
+- Página protegida `/me` que muestra la respuesta de identidad vía BFF y expone logout.
+- Utilidades server-side para cifrado de cookies, manejo de sesión, PKCE, endpoints OIDC y consumo del backend.
+- Variables de entorno de referencia para Keycloak, backend y sesión en `.env.example`.
+- Documentación técnica en `/docs/keycloak-bff-flow.md`.
+
+### Changed
+- Home `/` ahora distingue entre visitante sin sesión y usuario autenticado con acceso directo a `/me`.
+- Navbar pública actualizada para mostrar botón `Login` o `Logout` según estado de sesión.
+
+### Removed
+- Scaffold inicial de autenticación sin intercambio real de tokens.
+
 ## [0.1.1] - 2026-02-25
 
 ### Added

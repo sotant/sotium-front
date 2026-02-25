@@ -3,6 +3,10 @@ type NavItem = {
   label: string;
 };
 
+type LandingNavbarProps = {
+  isAuthenticated: boolean;
+};
+
 const navItems: readonly NavItem[] = [
   { href: "#home", label: "Inicio" },
   { href: "#features", label: "Características" },
@@ -10,7 +14,10 @@ const navItems: readonly NavItem[] = [
   { href: "#faq", label: "FAQ" },
 ] as const;
 
-export function LandingNavbar() {
+export function LandingNavbar({ isAuthenticated }: LandingNavbarProps) {
+  const authHref = isAuthenticated ? "/api/auth/logout" : "/api/auth/login";
+  const authLabel = isAuthenticated ? "Logout" : "Login";
+
   return (
     <header className="fixed top-0 z-50 w-full border-b border-slate-200/70 bg-white/90 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
@@ -31,10 +38,10 @@ export function LandingNavbar() {
         </nav>
 
         <a
-          href="/api/auth/login"
+          href={authHref}
           className="order-2 rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-700 md:order-3"
         >
-          ACCESO
+          {authLabel}
         </a>
       </div>
     </header>
