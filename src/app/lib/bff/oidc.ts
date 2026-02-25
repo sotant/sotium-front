@@ -45,6 +45,7 @@ function toSessionPayload(tokens: TokenSuccessResponse, fallbackRefreshToken?: s
 export async function exchangeAuthorizationCode(input: {
   code: string;
   codeVerifier: string;
+  redirectUri: string;
 }): Promise<SessionPayload> {
   const env = getEnvConfig();
   const endpoints = getOidcEndpoints();
@@ -59,7 +60,7 @@ export async function exchangeAuthorizationCode(input: {
       code: input.code,
       client_id: env.keycloakClientId,
       client_secret: env.keycloakClientSecret,
-      redirect_uri: endpoints.callbackUrl,
+      redirect_uri: input.redirectUri,
       code_verifier: input.codeVerifier,
     }),
     cache: "no-store",
@@ -106,6 +107,7 @@ export function buildAuthorizationUrl(input: {
   state: string;
   nonce: string;
   codeChallenge: string;
+  redirectUri: string;
 }): string {
   const env = getEnvConfig();
   const endpoints = getOidcEndpoints();
@@ -113,7 +115,7 @@ export function buildAuthorizationUrl(input: {
   const params = new URLSearchParams({
     client_id: env.keycloakClientId,
     response_type: "code",
-    redirect_uri: endpoints.callbackUrl,
+    redirect_uri: input.redirectUri,
     scope: endpoints.scope,
     state: input.state,
     nonce: input.nonce,
@@ -124,17 +126,20 @@ export function buildAuthorizationUrl(input: {
   return `${endpoints.authorizationEndpoint}?${params.toString()}`;
 }
 
-export function buildLogoutUrl(idTokenHint?: string): string {
+export function buildLogoutUrl(input: {
+  postLogoutRedirectUri: string;
+  idTokenHint?: string;
+}): string {
   const env = getEnvConfig();
   const endpoints = getOidcEndpoints();
 
   const params = new URLSearchParams({
-    post_logout_redirect_uri: endpoints.postLogoutRedirectUrl,
+    post_logout_redirect_uri: input.postLogoutRedirectUri,
     client_id: env.keycloakClientId,
   });
 
-  if (idTokenHint) {
-    params.set("id_token_hint", idTokenHint);
+  if (input.idTokenHint) {
+    params.set("id_token_hint", input.idTokenHint);
   }
 
   return `${endpoints.logoutEndpoint}?${params.toString()}`;

@@ -4,6 +4,17 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-02-25
+
+### Fixed
+- Redirección de login corregida para usar `redirect_uri` dinámica por origen de request, evitando quedarse en home por desalineación de host/sesión.
+- Intercambio de código en callback alineado con la misma `redirect_uri` dinámica usada en login.
+- Logout actualizado para construir `post_logout_redirect_uri` con el origen real de request.
+- Dashboard protegido ahora consume `/api/bff/me` sobre el mismo origen de la request para mantener cookies de sesión consistentes.
+
+### Changed
+- Se eliminó la ruta `/me`; el área autenticada queda únicamente en `/dashboard`.
+
 ## [0.1.5] - 2026-02-25
 
 ### Changed

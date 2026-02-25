@@ -25,6 +25,7 @@ export async function GET(request: Request): Promise<Response> {
     const session = await exchangeAuthorizationCode({
       code,
       codeVerifier: flow.codeVerifier,
+      redirectUri: `${appOrigin}/api/auth/callback`,
     });
 
     // We redirect using the same origin that handled the callback to keep cookie host alignment.

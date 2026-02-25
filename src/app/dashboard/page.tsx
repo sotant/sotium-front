@@ -1,17 +1,18 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getEnvConfig } from "@/app/lib/bff/env";
 import type { IdentityMeResponse } from "@/app/types/auth";
 
 export const dynamic = "force-dynamic";
 
 async function getIdentityFromBff(): Promise<IdentityMeResponse> {
-  const env = getEnvConfig();
   const headerStore = await headers();
   const cookieHeader = headerStore.get("cookie") ?? "";
+  const host = headerStore.get("host") ?? "localhost:3000";
+  const protocol = headerStore.get("x-forwarded-proto") ?? "http";
+  const appOrigin = `${protocol}://${host}`;
 
-  // We forward only incoming cookies so /api/bff/me can resolve BFF session on the server.
-  const response = await fetch(`${env.appBaseUrl}/api/bff/me`, {
+  // We call the BFF on the same origin to avoid host mismatch issues with auth cookies.
+  const response = await fetch(`${appOrigin}/api/bff/me`, {
     method: "GET",
     headers: {
       cookie: cookieHeader,
