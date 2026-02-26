@@ -4,6 +4,15 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.14] - 2026-02-26
+### Fixed
+- Logout ahora adjunta explícitamente `Set-Cookie` de borrado en la respuesta de redirect para garantizar eliminación de `bff_session`, `oidc_state` y `oidc_code_verifier`.
+- Se corrige el caso en que el usuario podía volver a `/dashboard` tras logout por persistencia de cookie local.
+
+### Changed
+- Versionado del proyecto a `0.1.14`.
+- Documentación de logout actualizada con el diagnóstico de persistencia de cookie.
+
 ## [0.1.13] - 2026-02-26
 ### Fixed
 - Logout OIDC ahora incluye `id_token_hint` cuando está disponible, evitando el error de Keycloak `Missing parameters: id_token_hint`.

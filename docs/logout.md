@@ -41,3 +41,9 @@ Algunos setups de Keycloak exigen `id_token_hint` en el `end_session_endpoint`.
 Para resolverlo, el callback ahora guarda `id_token` dentro de la sesión BFF (cookie httpOnly) y el endpoint de logout lo reenvía como `id_token_hint` cuando existe.
 
 La sesión local se sigue invalidando siempre primero para mantener la garantía de logout local aunque falle el proveedor.
+
+
+## Incidencia corregida: cookie `bff_session` persistente tras logout
+Se reforzó el endpoint de logout para adjuntar explícitamente cabeceras `Set-Cookie` de borrado en la respuesta de redirect.
+
+Con esto, el navegador recibe de forma inequívoca la invalidación de `bff_session` y cookies OIDC transitorias antes de continuar con el redirect a Keycloak o al fallback local.

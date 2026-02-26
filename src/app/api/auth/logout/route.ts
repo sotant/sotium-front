@@ -1,8 +1,40 @@
 import { NextResponse } from "next/server";
 
-import { clearOidcTransientCookies } from "@/app/lib/auth/oidcCookies";
+import { OIDC_STATE_COOKIE, OIDC_VERIFIER_COOKIE, clearOidcTransientCookies } from "@/app/lib/auth/oidcCookies";
 import { getOidcClient } from "@/app/lib/auth/oidcClient";
-import { clearBffSession, getBffSession } from "@/app/lib/auth/session";
+import { BFF_SESSION_COOKIE, clearBffSession, getBffSession } from "@/app/lib/auth/session";
+
+function applyCookieClearHeaders(response: NextResponse): NextResponse {
+  const secure = process.env.NODE_ENV === "production";
+
+  // Explicitly attach cookie-clearing headers to the response object so browser
+  // always receives deletion directives before following provider redirects.
+  response.cookies.set(BFF_SESSION_COOKIE, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure,
+    path: "/",
+    maxAge: 0,
+  });
+
+  response.cookies.set(OIDC_STATE_COOKIE, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure,
+    path: "/",
+    maxAge: 0,
+  });
+
+  response.cookies.set(OIDC_VERIFIER_COOKIE, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure,
+    path: "/",
+    maxAge: 0,
+  });
+
+  return response;
+}
 
 async function buildLogoutResponse(requestUrl: string): Promise<Response> {
   const currentSession = await getBffSession();
@@ -24,7 +56,7 @@ async function buildLogoutResponse(requestUrl: string): Promise<Response> {
     // Some OIDC providers do not expose end_session_endpoint. In that case we
     // fallback to a local redirect because local logout already happened.
     if (!endSessionEndpoint) {
-      return NextResponse.redirect(fallbackUrl, { status: 302 });
+      return applyCookieClearHeaders(NextResponse.redirect(fallbackUrl, { status: 302 }));
     }
 
     const configuredPostLogoutRedirectUri = process.env.KEYCLOAK_POST_LOGOUT_REDIRECT_URI;
@@ -39,9 +71,9 @@ async function buildLogoutResponse(requestUrl: string): Promise<Response> {
       logoutUrl.searchParams.set("id_token_hint", currentSession.idToken);
     }
 
-    return NextResponse.redirect(logoutUrl.toString(), { status: 302 });
+    return applyCookieClearHeaders(NextResponse.redirect(logoutUrl.toString(), { status: 302 }));
   } catch {
-    return NextResponse.redirect(fallbackUrl, { status: 302 });
+    return applyCookieClearHeaders(NextResponse.redirect(fallbackUrl, { status: 302 }));
   }
 }
 
