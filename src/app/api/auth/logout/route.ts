@@ -1,37 +1,46 @@
 import { NextResponse } from "next/server";
 
-import { OIDC_STATE_COOKIE, OIDC_VERIFIER_COOKIE, clearOidcTransientCookies } from "@/app/lib/auth/oidcCookies";
+import { OIDC_STATE_COOKIE, OIDC_VERIFIER_COOKIE } from "@/app/lib/auth/oidcCookies";
 import { getOidcClient } from "@/app/lib/auth/oidcClient";
-import { BFF_SESSION_COOKIE, clearBffSession, getBffSession } from "@/app/lib/auth/session";
+import { BFF_SESSION_COOKIE, getBffSession } from "@/app/lib/auth/session";
 
 function applyCookieClearHeaders(response: NextResponse): NextResponse {
-  const secure = process.env.NODE_ENV === "production";
+  // Emit hard-delete Set-Cookie directives directly on the redirect response so
+  // browser removes cookies instead of keeping empty-value entries visible.
+  response.cookies.delete(BFF_SESSION_COOKIE);
+  response.cookies.delete(OIDC_STATE_COOKIE);
+  response.cookies.delete(OIDC_VERIFIER_COOKIE);
 
-  // Explicitly attach cookie-clearing headers to the response object so browser
-  // always receives deletion directives before following provider redirects.
-  response.cookies.set(BFF_SESSION_COOKIE, "", {
-    httpOnly: true,
-    sameSite: "lax",
-    secure,
-    path: "/",
-    maxAge: 0,
-  });
+  // Add explicit expiry variants to cover environments where cookie attributes
+  // (like secure/path) may differ after proxy termination.
+  for (const secure of [false, true] as const) {
+    response.cookies.set(BFF_SESSION_COOKIE, "", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure,
+      path: "/",
+      maxAge: 0,
+      expires: new Date(0),
+    });
 
-  response.cookies.set(OIDC_STATE_COOKIE, "", {
-    httpOnly: true,
-    sameSite: "lax",
-    secure,
-    path: "/",
-    maxAge: 0,
-  });
+    response.cookies.set(OIDC_STATE_COOKIE, "", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure,
+      path: "/",
+      maxAge: 0,
+      expires: new Date(0),
+    });
 
-  response.cookies.set(OIDC_VERIFIER_COOKIE, "", {
-    httpOnly: true,
-    sameSite: "lax",
-    secure,
-    path: "/",
-    maxAge: 0,
-  });
+    response.cookies.set(OIDC_VERIFIER_COOKIE, "", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure,
+      path: "/",
+      maxAge: 0,
+      expires: new Date(0),
+    });
+  }
 
   return response;
 }
@@ -39,13 +48,8 @@ function applyCookieClearHeaders(response: NextResponse): NextResponse {
 async function buildLogoutResponse(requestUrl: string): Promise<Response> {
   const currentSession = await getBffSession();
 
-  // Read the current session first to recover id_token_hint for provider logout,
-  // then destroy local session so logout is guaranteed even if provider calls fail.
-  await clearBffSession();
-
-  // Remove transient OIDC request cookies to avoid stale state/verifier values
-  // lingering after logout boundaries.
-  await clearOidcTransientCookies();
+  // Read current session first so we can still provide id_token_hint, then rely
+  // on redirect Set-Cookie headers to delete local cookies in a single response.
 
   const fallbackUrl = new URL("/", requestUrl);
 
@@ -54,7 +58,7 @@ async function buildLogoutResponse(requestUrl: string): Promise<Response> {
     const endSessionEndpoint = issuer.metadata.end_session_endpoint;
 
     // Some OIDC providers do not expose end_session_endpoint. In that case we
-    // fallback to a local redirect because local logout already happened.
+    // fallback to local redirect while still returning cookie-deletion headers.
     if (!endSessionEndpoint) {
       return applyCookieClearHeaders(NextResponse.redirect(fallbackUrl, { status: 302 }));
     }

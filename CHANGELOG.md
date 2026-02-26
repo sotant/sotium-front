@@ -4,6 +4,15 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.16] - 2026-02-26
+### Fixed
+- Logout refuerza borrado de cookies en la respuesta de redirect con estrategia de borrado duro (`delete` + `maxAge=0` + `expires` pasado).
+- Se corrige el escenario donde `bff_session`, `oidc_state` y `oidc_code_verifier` quedaban visibles como cookies vacías tras logout.
+
+### Changed
+- Versionado del proyecto a `0.1.16`.
+- Documentación de logout actualizada con el diagnóstico de cookies vacías visibles.
+
 ## [0.1.15] - 2026-02-26
 ### Changed
 - Logout UI ahora usa `POST` directo del navegador a `/api/auth/logout` en lugar de Server Action.

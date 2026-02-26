@@ -52,3 +52,9 @@ Con esto, el navegador recibe de forma inequívoca la invalidación de `bff_sess
 Se reemplazó el uso de Server Action para logout por un `POST` directo del navegador hacia `/api/auth/logout`.
 
 Esto evita encadenados de redirect internos de actions/fetch y mejora la fiabilidad del borrado de cookies antes del salto cross-origin a Keycloak.
+
+
+## Incidencia corregida: cookies vacías visibles tras logout
+Se ajustó el endpoint de logout para enviar cabeceras de **borrado duro** en la respuesta de redirect (`delete` + `maxAge=0` + `expires` pasado), en lugar de depender de vaciado previo en contexto interno.
+
+Con este ajuste, `bff_session`, `oidc_state` y `oidc_code_verifier` deben eliminarse del navegador en lugar de quedar como cookies vacías visibles.
