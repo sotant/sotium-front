@@ -5,12 +5,14 @@ export const BFF_SESSION_COOKIE = "bff_session" as const;
 type BffSession = {
   accessToken: string;
   refreshToken?: string;
+  idToken?: string;
   expiresAt: number;
 };
 
 type BffSessionCookiePayload = {
   accessToken: string;
   refreshToken?: string;
+  idToken?: string;
   expiresAt: number;
 };
 
@@ -68,9 +70,14 @@ export async function getBffSession(): Promise<BffSession | null> {
       return null;
     }
 
+    if (parsed.idToken !== undefined && typeof parsed.idToken !== "string") {
+      return null;
+    }
+
     return {
       accessToken: parsed.accessToken,
       refreshToken: parsed.refreshToken,
+      idToken: parsed.idToken,
       expiresAt: parsed.expiresAt,
     };
   } catch {

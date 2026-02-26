@@ -76,6 +76,7 @@ export async function GET(request: Request): Promise<Response> {
   const session: BffSession = {
     accessToken: tokenSet.access_token,
     refreshToken: tokenSet.refresh_token,
+    idToken: tokenSet.id_token,
     expiresAt: Date.now() + tokenSet.expires_in * 1000,
   };
 

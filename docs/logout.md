@@ -33,3 +33,11 @@ Esto mantiene seguridad porque la sesión local ya fue invalidada.
 4. Intentar volver a `/dashboard`:
    - Debe redirigir a `/`.
 5. Verificar en DevTools que `bff_session` desaparece.
+
+
+## Incidencia corregida: `Missing parameters: id_token_hint`
+Algunos setups de Keycloak exigen `id_token_hint` en el `end_session_endpoint`.
+
+Para resolverlo, el callback ahora guarda `id_token` dentro de la sesión BFF (cookie httpOnly) y el endpoint de logout lo reenvía como `id_token_hint` cuando existe.
+
+La sesión local se sigue invalidando siempre primero para mantener la garantía de logout local aunque falle el proveedor.

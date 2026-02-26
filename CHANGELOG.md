@@ -4,6 +4,15 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.13] - 2026-02-26
+### Fixed
+- Logout OIDC ahora incluye `id_token_hint` cuando está disponible, evitando el error de Keycloak `Missing parameters: id_token_hint`.
+- Callback OIDC persiste `id_token` en la sesión BFF para soportar cierre de sesión RP-initiated logout.
+
+### Changed
+- Versionado del proyecto a `0.1.13`.
+- Documentación de logout actualizada con el diagnóstico y solución para `id_token_hint`.
+
 ## [0.1.12] - 2026-02-26
 ### Added
 - Endpoint `POST /api/auth/logout` para limpiar sesión BFF, limpiar cookies OIDC transitorias y redirigir al logout de Keycloak.
