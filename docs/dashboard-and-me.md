@@ -39,3 +39,9 @@ Con este enfoque, la UI nunca consume el backend externo directamente: todo pasa
    - Sin sesión: `GET /api/bff/me` debe responder `401`.
    - Con sesión: `GET /api/bff/me` debe responder `200` con JSON tipado.
 4. Verificar en Network/DevTools que la UI no llama a `BACKEND_BASE_URL` directamente.
+
+
+## Incidencia corregida: cookie de sesión en SSR interno
+En el dashboard SSR, la llamada interna a `/api/bff/me` ahora reenvía explícitamente el header `cookie` de la request original.
+
+Sin ese reenvío, la llamada server-to-server podía llegar sin `bff_session`, provocando `401` aunque el usuario sí estuviera autenticado en el navegador.

@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { DashboardNavbar } from "@/app/components/dashboard/DashboardNavbar";
@@ -13,8 +14,16 @@ export default async function DashboardPage() {
 
   // The UI calls only internal BFF endpoints. External backend calls remain
   // encapsulated in route handlers where bearer tokens are managed securely.
+  const requestHeaders = await headers();
+
+  // Forward the original cookie header when calling internal BFF endpoints from
+  // the server runtime. Without this, the internal request is anonymous and the
+  // BFF cannot read the session cookie.
   const response = await fetch(`${baseUrl}/api/bff/me`, {
     cache: "no-store",
+    headers: {
+      cookie: requestHeaders.get("cookie") ?? "",
+    },
   });
 
   if (response.status === 401) {

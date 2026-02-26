@@ -4,6 +4,14 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.11] - 2026-02-26
+### Fixed
+- Dashboard SSR ahora reenvía explícitamente el header `cookie` al consumir `/api/bff/me`, evitando respuestas `401` por falta de `bff_session` en la llamada interna server-to-server.
+
+### Changed
+- Versionado del proyecto a `0.1.11`.
+- Documentación de dashboard actualizada con el diagnóstico de la incidencia de cookies en SSR.
+
 ## [0.1.10] - 2026-02-26
 ### Added
 - Protección de `/dashboard` y `/api/bff/*` con middleware basado en presencia de cookie `bff_session`.
