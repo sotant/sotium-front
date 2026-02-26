@@ -4,6 +4,18 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-02-26
+### Added
+- Protección de `/dashboard` y `/api/bff/*` con middleware basado en presencia de cookie `bff_session`.
+- Endpoint BFF `GET /api/bff/me` que usa sesión httpOnly y consulta backend `/api/identity/me` con `Authorization: Bearer`.
+- Página SSR `app/(protected)/dashboard/page.tsx` con consumo exclusivo de `/api/bff/me`.
+- Componente `DashboardNavbar` y tipo compartido `IdentityMeDto`.
+- Helper server `getBaseUrl()` para construir URL absoluta en Server Components.
+- Documentación técnica en `docs/dashboard-and-me.md`.
+
+### Changed
+- Versionado del proyecto a `0.1.10`.
+
 ## [0.1.9] - 2026-02-26
 ### Fixed
 - Reversión de la estrategia híbrida público/confidencial en callback OIDC.
