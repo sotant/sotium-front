@@ -4,6 +4,16 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-02-26
+### Fixed
+- Reversión de la estrategia híbrida público/confidencial en callback OIDC.
+- `KEYCLOAK_CLIENT_SECRET` ahora se valida y centraliza en `app/lib/auth/oidcClient.ts`.
+- El callback usa siempre `client_secret_basic`, alineado con comunicación confidencial hacia Keycloak.
+
+### Changed
+- Versionado del proyecto a `0.1.9`.
+- Documentación del callback actualizada para reflejar modo confidencial obligatorio.
+
 ## [0.1.8] - 2026-02-26
 ### Fixed
 - Corrección en `GET /api/auth/callback`: selección explícita del método de autenticación del cliente OIDC para soportar clientes públicos (`token_endpoint_auth_method=none`) y confidenciales (`client_secret_basic` con `KEYCLOAK_CLIENT_SECRET`).

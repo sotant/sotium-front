@@ -60,10 +60,7 @@ Se corrigió el handler para reenviar `iss` (si está presente), permitiendo la 
 
 Esta incidencia también era de **código** (parámetros incompletos enviados a `openid-client`), no de configuración de credenciales en Keycloak.
 
+## Configuración de cliente en Keycloak
+Esta implementación asume comunicación **confidencial** con Keycloak.
 
-## Configuración de cliente en Keycloak (público vs confidencial)
-El callback ahora soporta ambos modos:
-- **Public client**: usa `token_endpoint_auth_method=none` y PKCE (sin client secret).
-- **Confidential client**: usa `client_secret_basic` y requiere `KEYCLOAK_CLIENT_SECRET`.
-
-Con esto se evita el error `client_secret_basic client authentication method requires a client_secret` cuando el cliente está configurado como público o cuando falta mapear el secreto en entorno para clientes confidenciales.
+Por ello, `KEYCLOAK_CLIENT_SECRET` es obligatorio y el callback usa `client_secret_basic` durante el intercambio de tokens.
