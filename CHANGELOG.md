@@ -4,6 +4,15 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-02-26
+### Added
+- Endpoint `GET /api/auth/callback` para validar `state`, intercambiar `code` por tokens y redirigir a `/dashboard`.
+- Helper `src/app/lib/auth/session.ts` para crear, leer y limpiar sesión BFF en cookie `httpOnly`.
+- Documentación del paso de callback OIDC en `docs/oidc-login-step-2-callback.md`.
+
+### Changed
+- Versionado del proyecto a `0.1.5`.
+
 ## [0.1.4] - 2026-02-26
 ### Fixed
 - Reversión del fallback de discovery OIDC para volver al uso directo de `openid-client`, ya que la dependencia fue instalada correctamente en el entorno.
