@@ -1,5 +1,3 @@
-import { logoutAction } from "@/app/actions/auth/logout";
-
 const dashboardMenuItems = ["Users", "Classes", "Documentation", "Calendar"] as const;
 
 export function DashboardNavbar() {
@@ -16,9 +14,9 @@ export function DashboardNavbar() {
           </ul>
         </nav>
 
-        {/* Logout uses POST semantics through a server form action because it
-            changes auth state and should not rely on client-side JavaScript. */}
-        <form action={logoutAction}>
+        {/* Submit logout as a native browser POST to avoid action/fetch redirect
+            chains that can make cross-origin cookie clearing less reliable. */}
+        <form method="post" action="/api/auth/logout">
           <button
             type="submit"
             className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"

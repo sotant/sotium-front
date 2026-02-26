@@ -9,9 +9,8 @@ Esto evita que un fallo puntual en Keycloak deje una sesión local activa.
 
 ## Flujo
 1. Usuario pulsa **Logout** en el dashboard.
-2. El formulario ejecuta `logoutAction` (Server Action).
-3. La acción redirige a `/api/auth/logout`.
-4. `POST/GET /api/auth/logout`:
+2. El formulario envía un `POST` nativo del navegador a `/api/auth/logout`.
+3. `POST/GET /api/auth/logout`:
    - limpia `bff_session`
    - limpia cookies OIDC transitorias
    - hace redirect al logout de Keycloak con `post_logout_redirect_uri`
@@ -47,3 +46,9 @@ La sesión local se sigue invalidando siempre primero para mantener la garantía
 Se reforzó el endpoint de logout para adjuntar explícitamente cabeceras `Set-Cookie` de borrado en la respuesta de redirect.
 
 Con esto, el navegador recibe de forma inequívoca la invalidación de `bff_session` y cookies OIDC transitorias antes de continuar con el redirect a Keycloak o al fallback local.
+
+
+## Ajuste de implementación
+Se reemplazó el uso de Server Action para logout por un `POST` directo del navegador hacia `/api/auth/logout`.
+
+Esto evita encadenados de redirect internos de actions/fetch y mejora la fiabilidad del borrado de cookies antes del salto cross-origin a Keycloak.

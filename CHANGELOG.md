@@ -4,6 +4,12 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.15] - 2026-02-26
+### Changed
+- Logout UI ahora usa `POST` directo del navegador a `/api/auth/logout` en lugar de Server Action.
+- Versionado del proyecto a `0.1.15`.
+- Documentación de logout actualizada con la nueva estrategia de envío.
+
 ## [0.1.14] - 2026-02-26
 ### Fixed
 - Logout ahora adjunta explícitamente `Set-Cookie` de borrado en la respuesta de redirect para garantizar eliminación de `bff_session`, `oidc_state` y `oidc_code_verifier`.
