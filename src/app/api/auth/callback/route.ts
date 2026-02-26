@@ -9,6 +9,7 @@ export async function GET(request: Request): Promise<Response> {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const state = requestUrl.searchParams.get("state");
+  const iss = requestUrl.searchParams.get("iss");
 
   // Never trust callback query parameters blindly because they originate from
   // the browser. Missing values indicate an invalid OIDC response.
@@ -44,9 +45,18 @@ export async function GET(request: Request): Promise<Response> {
   // client.callback validates protocol details (state, issuer metadata usage,
   // token response fields) and performs a safer code exchange than manual HTTP.
   const client = new issuer.Client({ client_id: clientId });
+  const callbackParams: { code: string; state: string; iss?: string } = { code, state };
+
+  // Some providers (including Keycloak realms with mix-up protections) append
+  // `iss` to the authorization response. Forwarding it to openid-client allows
+  // issuer-origin validation and prevents RP mix-up attacks.
+  if (iss) {
+    callbackParams.iss = iss;
+  }
+
   const tokenSet = await client.callback(
     redirectUri,
-    { code, state },
+    callbackParams,
     // openid-client expects state validation in the checks object; omitting it
     // triggers checks.state errors and skips the library's built-in CSRF checks.
     { state: storedState, code_verifier: codeVerifier },

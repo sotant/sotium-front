@@ -51,3 +51,11 @@ Se corrigió un error en el callback donde `client.callback(...)` no recibía `s
 En `openid-client`, el `state` debe validarse explícitamente en `checks`; de lo contrario puede aparecer `TypeError: checks.state argument is missing`.
 
 Esto era un problema de **código** (uso incorrecto de la API), no de configuración de Keycloak.
+
+
+## Incidencia adicional corregida
+Cuando Keycloak envía el parámetro `iss` en el callback, `openid-client` espera recibirlo también en los parámetros entregados a `client.callback(...)`.
+
+Se corrigió el handler para reenviar `iss` (si está presente), permitiendo la validación de issuer y evitando el error `RPError: iss missing from the response`.
+
+Esta incidencia también era de **código** (parámetros incompletos enviados a `openid-client`), no de configuración de credenciales en Keycloak.
