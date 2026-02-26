@@ -4,6 +4,16 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-02-26
+### Added
+- Endpoint `GET /api/auth/login` en BFF para iniciar Authorization Code + PKCE con discovery OIDC.
+- Helpers `oidcClient` y `oidcCookies` para encapsular discovery y manejo de cookies transitorias.
+- Documentación técnica de este paso en `docs/oidc-login-step-1.md`.
+- Dependencia `openid-client` para discovery OIDC robusto y base de validaciones futuras.
+
+### Changed
+- Versionado del proyecto a `0.1.2`.
+
 ## [0.1.1] - 2026-02-26
 ### Added
 - Landing page inicial en `/` con cuatro secciones (`hero`, `features`, `documentation`, `pricing`) y contenido base.
