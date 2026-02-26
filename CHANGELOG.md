@@ -4,6 +4,14 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-02-26
+### Fixed
+- Corrección en `GET /api/auth/callback`: `openid-client` ahora recibe `state` en el objeto `checks` durante `client.callback(...)`, evitando el error `TypeError: checks.state argument is missing`.
+
+### Changed
+- Versionado del proyecto a `0.1.6`.
+- Documentación del callback actualizada con diagnóstico de la incidencia.
+
 ## [0.1.5] - 2026-02-26
 ### Added
 - Endpoint `GET /api/auth/callback` para validar `state`, intercambiar `code` por tokens y redirigir a `/dashboard`.

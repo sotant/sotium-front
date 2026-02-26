@@ -44,7 +44,13 @@ export async function GET(request: Request): Promise<Response> {
   // client.callback validates protocol details (state, issuer metadata usage,
   // token response fields) and performs a safer code exchange than manual HTTP.
   const client = new issuer.Client({ client_id: clientId });
-  const tokenSet = await client.callback(redirectUri, { code, state }, { code_verifier: codeVerifier });
+  const tokenSet = await client.callback(
+    redirectUri,
+    { code, state },
+    // openid-client expects state validation in the checks object; omitting it
+    // triggers checks.state errors and skips the library's built-in CSRF checks.
+    { state: storedState, code_verifier: codeVerifier },
+  );
 
   if (!tokenSet.access_token || !tokenSet.expires_in) {
     return new Response("OIDC token response is missing required fields.", { status: 500 });

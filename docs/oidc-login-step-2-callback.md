@@ -44,3 +44,10 @@ La sesión se serializa como JSON en cookie `httpOnly`, con `sameSite=lax`, `pat
 - Logout.
 - Middleware de protección de rutas.
 - Integración con `/api/identity/me`.
+
+
+## Incidencia corregida
+Se corrigió un error en el callback donde `client.callback(...)` no recibía `state` en el objeto `checks`.
+En `openid-client`, el `state` debe validarse explícitamente en `checks`; de lo contrario puede aparecer `TypeError: checks.state argument is missing`.
+
+Esto era un problema de **código** (uso incorrecto de la API), no de configuración de Keycloak.
