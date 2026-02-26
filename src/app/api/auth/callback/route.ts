@@ -40,11 +40,27 @@ export async function GET(request: Request): Promise<Response> {
   }
 
   const { issuer, clientId } = await getOidcClient();
+  const clientSecret = process.env.KEYCLOAK_CLIENT_SECRET;
+
+  // Build client auth mode explicitly to support both public and confidential
+  // Keycloak clients. Public clients use PKCE with no client secret, while
+  // confidential clients must authenticate at the token endpoint.
+  const client = new issuer.Client(
+    clientSecret
+      ? {
+          client_id: clientId,
+          client_secret: clientSecret,
+          token_endpoint_auth_method: "client_secret_basic",
+        }
+      : {
+          client_id: clientId,
+          token_endpoint_auth_method: "none",
+        },
+  );
 
   // PKCE proves possession of the original verifier generated during login.
   // client.callback validates protocol details (state, issuer metadata usage,
   // token response fields) and performs a safer code exchange than manual HTTP.
-  const client = new issuer.Client({ client_id: clientId });
   const callbackParams: { code: string; state: string; iss?: string } = { code, state };
 
   // Some providers (including Keycloak realms with mix-up protections) append

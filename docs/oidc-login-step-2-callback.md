@@ -59,3 +59,11 @@ Cuando Keycloak envía el parámetro `iss` en el callback, `openid-client` esper
 Se corrigió el handler para reenviar `iss` (si está presente), permitiendo la validación de issuer y evitando el error `RPError: iss missing from the response`.
 
 Esta incidencia también era de **código** (parámetros incompletos enviados a `openid-client`), no de configuración de credenciales en Keycloak.
+
+
+## Configuración de cliente en Keycloak (público vs confidencial)
+El callback ahora soporta ambos modos:
+- **Public client**: usa `token_endpoint_auth_method=none` y PKCE (sin client secret).
+- **Confidential client**: usa `client_secret_basic` y requiere `KEYCLOAK_CLIENT_SECRET`.
+
+Con esto se evita el error `client_secret_basic client authentication method requires a client_secret` cuando el cliente está configurado como público o cuando falta mapear el secreto en entorno para clientes confidenciales.

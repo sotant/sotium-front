@@ -4,6 +4,15 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-02-26
+### Fixed
+- Corrección en `GET /api/auth/callback`: selección explícita del método de autenticación del cliente OIDC para soportar clientes públicos (`token_endpoint_auth_method=none`) y confidenciales (`client_secret_basic` con `KEYCLOAK_CLIENT_SECRET`).
+- Se evita el error `client_secret_basic client authentication method requires a client_secret` en el intercambio de tokens.
+
+### Changed
+- Versionado del proyecto a `0.1.8`.
+- Documentación del callback actualizada con guía de configuración público/confidencial en Keycloak.
+
 ## [0.1.7] - 2026-02-26
 ### Fixed
 - Corrección en `GET /api/auth/callback`: ahora se reenvía el parámetro `iss` (cuando llega desde Keycloak) a `client.callback(...)`, evitando el error `RPError: iss missing from the response`.
