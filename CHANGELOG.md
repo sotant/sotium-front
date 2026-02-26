@@ -4,6 +4,15 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-02-26
+### Fixed
+- Error de build `Module not found: Can't resolve 'openid-client'` al iniciar el flujo de login.
+- Helper de discovery OIDC ahora prioriza `openid-client` y usa fallback estándar `.well-known/openid-configuration` en entornos locales con instalación incompleta.
+
+### Changed
+- Versionado del proyecto a `0.1.3`.
+- Documentación de OIDC actualizada para incluir el comportamiento de fallback y diagnóstico del error.
+
 ## [0.1.2] - 2026-02-26
 ### Added
 - Endpoint `GET /api/auth/login` en BFF para iniciar Authorization Code + PKCE con discovery OIDC.
