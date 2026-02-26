@@ -1,3 +1,5 @@
+import { logoutAction } from "@/app/actions/auth/logout";
+
 const dashboardMenuItems = ["Users", "Classes", "Documentation", "Calendar"] as const;
 
 export function DashboardNavbar() {
@@ -14,14 +16,16 @@ export function DashboardNavbar() {
           </ul>
         </nav>
 
-        <button
-          type="button"
-          disabled
-          className="cursor-not-allowed rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-500"
-          aria-disabled="true"
-        >
-          Logout
-        </button>
+        {/* Logout uses POST semantics through a server form action because it
+            changes auth state and should not rely on client-side JavaScript. */}
+        <form action={logoutAction}>
+          <button
+            type="submit"
+            className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+          >
+            Logout
+          </button>
+        </form>
       </div>
     </header>
   );

@@ -4,6 +4,16 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.12] - 2026-02-26
+### Added
+- Endpoint `POST /api/auth/logout` para limpiar sesión BFF, limpiar cookies OIDC transitorias y redirigir al logout de Keycloak.
+- Server Action `logoutAction` para ejecutar logout desde formulario server-first.
+- Botón Logout funcional en el navbar de dashboard usando `<form action={logoutAction}>`.
+- Documentación técnica del flujo de logout en `docs/logout.md`.
+
+### Changed
+- Versionado del proyecto a `0.1.12`.
+
 ## [0.1.11] - 2026-02-26
 ### Fixed
 - Dashboard SSR ahora reenvía explícitamente el header `cookie` al consumir `/api/bff/me`, evitando respuestas `401` por falta de `bff_session` en la llamada interna server-to-server.
