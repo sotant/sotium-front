@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { DashboardNavbar } from "@/app/components/dashboard/DashboardNavbar";
-import { getBaseUrl } from "@/app/lib/http/baseUrl";
+import { getInternalBaseUrl } from "@/app/lib/http/baseUrl";
 import type { IdentityMeDto } from "@/app/types/identity";
 
 export const dynamic = "force-dynamic";
@@ -10,15 +10,15 @@ export const dynamic = "force-dynamic";
 export default async function DashboardPage() {
   // Keep the dashboard as SSR so authentication and user data fetching happen
   // on the server, avoiding client-side token handling and race conditions.
-  const baseUrl = await getBaseUrl();
+  const baseUrl = getInternalBaseUrl();
 
   // The UI calls only internal BFF endpoints. External backend calls remain
   // encapsulated in route handlers where bearer tokens are managed securely.
   const requestHeaders = await headers();
 
-  // Forward the original cookie header when calling internal BFF endpoints from
-  // the server runtime. Without this, the internal request is anonymous and the
-  // BFF cannot read the session cookie.
+  // Forward the original cookie header only to a trusted internal origin.
+  // The base URL comes from server config (or local loopback in dev), avoiding
+  // Host-header derived origins that could leak session cookies.
   const response = await fetch(`${baseUrl}/api/bff/me`, {
     cache: "no-store",
     headers: {

@@ -1,17 +1,18 @@
-import { headers } from "next/headers";
+function normalizeOrigin(value: string): string {
+  return value.endsWith("/") ? value.slice(0, -1) : value;
+}
 
-export async function getBaseUrl(): Promise<string> {
-  const headerStore = await headers();
+export function getInternalBaseUrl(): string {
+  const configuredOrigin = process.env.INTERNAL_BASE_URL;
 
-  // Server Components require an absolute URL when calling internal route
-  // handlers because there is no browser origin context available on the server.
-  const forwardedProto = headerStore.get("x-forwarded-proto");
-  const host = headerStore.get("host");
-
-  if (!host) {
-    throw new Error("Missing host header.");
+  if (configuredOrigin) {
+    return normalizeOrigin(configuredOrigin);
   }
 
-  const protocol = forwardedProto ?? "http";
-  return `${protocol}://${host}`;
+  if (process.env.NODE_ENV !== "production") {
+    const port = process.env.PORT ?? "3000";
+    return `http://127.0.0.1:${port}`;
+  }
+
+  throw new Error("Missing INTERNAL_BASE_URL environment variable in production.");
 }

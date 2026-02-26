@@ -4,6 +4,15 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.17] - 2026-02-26
+### Fixed
+- Dashboard SSR ahora consume `/api/bff/me` usando un origen interno confiable definido por `INTERNAL_BASE_URL` (o loopback local en desarrollo), evitando el uso de `Host`/`x-forwarded-proto` para construir destino.
+- Se mitiga el riesgo de exfiltración de `bff_session` por Host header injection al reenviar cookies solo a un origen interno confiable.
+
+### Changed
+- Versionado del proyecto a `0.1.17`.
+- Documentación de dashboard actualizada con lineamientos de hardening para origen interno.
+
 ## [0.1.16] - 2026-02-26
 ### Fixed
 - Logout refuerza borrado de cookies en la respuesta de redirect con estrategia de borrado duro (`delete` + `maxAge=0` + `expires` pasado).
