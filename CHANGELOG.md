@@ -4,6 +4,14 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-02-26
+### Fixed
+- Reversión del fallback de discovery OIDC para volver al uso directo de `openid-client`, ya que la dependencia fue instalada correctamente en el entorno.
+
+### Changed
+- Versionado del proyecto a `0.1.4`.
+- Documentación de OIDC actualizada para reflejar que el discovery depende de `openid-client`.
+
 ## [0.1.3] - 2026-02-26
 ### Fixed
 - Error de build `Module not found: Can't resolve 'openid-client'` al iniciar el flujo de login.
