@@ -47,9 +47,3 @@ La sesión local se sigue invalidando siempre primero para mantener la garantía
 Se reforzó el endpoint de logout para adjuntar explícitamente cabeceras `Set-Cookie` de borrado en la respuesta de redirect.
 
 Con esto, el navegador recibe de forma inequívoca la invalidación de `bff_session` y cookies OIDC transitorias antes de continuar con el redirect a Keycloak o al fallback local.
-
-
-## Refuerzo adicional de borrado de cookies
-Se añadieron cabeceras de borrado con `expires` pasado y `maxAge=0` en la respuesta de redirect, publicando variantes `secure=true` y `secure=false`.
-
-Esto mejora la compatibilidad cuando el entorno productivo está detrás de proxy/CDN y evita que una diferencia de flags impida eliminar `bff_session`.

@@ -5,39 +5,33 @@ import { getOidcClient } from "@/app/lib/auth/oidcClient";
 import { BFF_SESSION_COOKIE, clearBffSession, getBffSession } from "@/app/lib/auth/session";
 
 function applyCookieClearHeaders(response: NextResponse): NextResponse {
-  // Attach explicit deletion headers on the redirect response itself. We emit
-  // both secure=false and secure=true variants to robustly clear cookies across
-  // deployment setups where original flags may differ behind proxies.
-  const clearVariants = [false, true] as const;
+  const secure = process.env.NODE_ENV === "production";
 
-  for (const secure of clearVariants) {
-    response.cookies.set(BFF_SESSION_COOKIE, "", {
-      httpOnly: true,
-      sameSite: "lax",
-      secure,
-      path: "/",
-      maxAge: 0,
-      expires: new Date(0),
-    });
+  // Explicitly attach cookie-clearing headers to the response object so browser
+  // always receives deletion directives before following provider redirects.
+  response.cookies.set(BFF_SESSION_COOKIE, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure,
+    path: "/",
+    maxAge: 0,
+  });
 
-    response.cookies.set(OIDC_STATE_COOKIE, "", {
-      httpOnly: true,
-      sameSite: "lax",
-      secure,
-      path: "/",
-      maxAge: 0,
-      expires: new Date(0),
-    });
+  response.cookies.set(OIDC_STATE_COOKIE, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure,
+    path: "/",
+    maxAge: 0,
+  });
 
-    response.cookies.set(OIDC_VERIFIER_COOKIE, "", {
-      httpOnly: true,
-      sameSite: "lax",
-      secure,
-      path: "/",
-      maxAge: 0,
-      expires: new Date(0),
-    });
-  }
+  response.cookies.set(OIDC_VERIFIER_COOKIE, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure,
+    path: "/",
+    maxAge: 0,
+  });
 
   return response;
 }

@@ -4,15 +4,6 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
-## [0.1.15] - 2026-02-26
-### Fixed
-- Refuerzo del logout para borrar `bff_session` y cookies OIDC con `maxAge=0` + `expires` pasado en la respuesta de redirect.
-- Se publican variantes de borrado `secure=true` y `secure=false` para mayor compatibilidad detrás de proxies, evitando persistencia de cookie tras logout.
-
-### Changed
-- Versionado del proyecto a `0.1.15`.
-- Documentación de logout actualizada con el refuerzo de borrado de cookies.
-
 ## [0.1.14] - 2026-02-26
 ### Fixed
 - Logout ahora adjunta explícitamente `Set-Cookie` de borrado en la respuesta de redirect para garantizar eliminación de `bff_session`, `oidc_state` y `oidc_code_verifier`.
