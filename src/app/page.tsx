@@ -1,6 +1,7 @@
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { LandingSection } from "@/components/landing/LandingSection";
 
+
 const sections = [
   {
     id: "hero",

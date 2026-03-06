@@ -7,7 +7,62 @@ import type { IdentityMeDto } from "@/app/types/identity";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage() {
+type DashboardPageProps = {
+  searchParams: Promise<{
+    registrationStatus?: string;
+    registrationAction?: string;
+    academyId?: string;
+  }>;
+};
+
+type RegistrationFeedback = {
+  title: string;
+  description: string;
+  toneClassName: string;
+};
+
+function getRegistrationFeedback(params: {
+  registrationStatus?: string;
+  registrationAction?: string;
+  academyId?: string;
+}): RegistrationFeedback | null {
+  if (!params.registrationStatus || !params.registrationAction) {
+    return null;
+  }
+
+  if (params.registrationAction === "owner_assigned") {
+    const academySuffix = params.academyId ? ` Academy ID: ${params.academyId}.` : "";
+
+    return {
+      title: "Registration completed",
+      description: `Your onboarding status is ${params.registrationStatus}. OWNER role was assigned.${academySuffix}`,
+      toneClassName: "border-emerald-200 bg-emerald-50 text-emerald-900",
+    };
+  }
+
+  if (params.registrationAction === "user_deleted") {
+    return {
+      title: "Registration not completed",
+      description: `Your onboarding status is ${params.registrationStatus}. The user was removed from Keycloak.`,
+      toneClassName: "border-amber-200 bg-amber-50 text-amber-900",
+    };
+  }
+
+  if (params.registrationAction === "error") {
+    return {
+      title: "Registration flow failed",
+      description: "We could not complete post-registration processing. Please contact support.",
+      toneClassName: "border-red-200 bg-red-50 text-red-900",
+    };
+  }
+
+  return null;
+}
+
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+  const params = await searchParams;
+  const registrationFeedback = getRegistrationFeedback(params);
+
   // Keep the dashboard as SSR so authentication and user data fetching happen
   // on the server, avoiding client-side token handling and race conditions.
   const baseUrl = getInternalBaseUrl();
@@ -41,6 +96,13 @@ export default async function DashboardPage() {
       <DashboardNavbar />
 
       <main className="mx-auto w-full max-w-6xl px-6 py-10">
+        {registrationFeedback ? (
+          <section className={`mb-6 rounded-xl border p-4 shadow-sm ${registrationFeedback.toneClassName}`}>
+            <h2 className="text-sm font-semibold uppercase tracking-wide">{registrationFeedback.title}</h2>
+            <p className="mt-2 text-sm">{registrationFeedback.description}</p>
+          </section>
+        ) : null}
+
         <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
           <p className="mt-2 text-sm text-slate-600">Authenticated identity from BFF endpoint.</p>
