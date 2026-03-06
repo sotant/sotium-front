@@ -4,6 +4,13 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-03-06
+### Fixed
+- Corrección en `GET /api/auth/registrations` para normalizar el issuer con slash final antes de construir la URL de Keycloak registrations, evitando perder el segmento del realm cuando el issuer viene sin `/` al final.
+
+### Added
+- Documento `docs/10-fix-registration-issuer-trailing-slash.md` con el análisis y alcance del fix.
+
 ## [0.1.3] - 2026-03-06
 ### Added
 - Documento `docs/9-prompt-agente-owner-or-delete.md` con un prompt detallado en formato Markdown para guiar a un agente de programación en la implementación del flujo condicional de rol `OWNER` o borrado de usuario en Keycloak.

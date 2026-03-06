@@ -6,8 +6,18 @@ import { getOidcClient } from "@/app/lib/auth/oidcClient";
 
 const KEYCLOAK_REGISTRATION_PATH = "protocol/openid-connect/registrations" as const;
 
+function ensureTrailingSlashInPath(url: URL): URL {
+  const normalizedUrl = new URL(url.toString());
+
+  if (!normalizedUrl.pathname.endsWith("/")) {
+    normalizedUrl.pathname = `${normalizedUrl.pathname}/`;
+  }
+
+  return normalizedUrl;
+}
+
 function resolveRegistrationEndpoint(issuer: URL): string {
-  return new URL(KEYCLOAK_REGISTRATION_PATH, issuer).toString();
+  return new URL(KEYCLOAK_REGISTRATION_PATH, ensureTrailingSlashInPath(issuer)).toString();
 }
 
 function resolveRegistrationRedirectUri(request: Request): string | null {
