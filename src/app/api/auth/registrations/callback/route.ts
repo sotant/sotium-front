@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import type { TokenSet } from "openid-client";
 
 import { OIDC_STATE_COOKIE, OIDC_VERIFIER_COOKIE, clearOidcTransientCookies } from "@/app/lib/auth/oidcCookies";
+import { deleteKeycloakUser, assignRealmRoleToUser } from "@/app/lib/auth/keycloakAdmin";
 import { getOidcClient } from "@/app/lib/auth/oidcClient";
 import { setBffSession, type BffSession } from "@/app/lib/auth/session";
 
@@ -20,10 +21,19 @@ type OnboardingPayload = {
 
 type IdTokenClaims = {
   email?: unknown;
+  sub?: unknown;
+};
+
+type OnboardingResponse = {
+  academyId: string | null;
+  status: string;
 };
 
 const DEFAULT_ONBOARDING_NAME = "Dummy Academy" as const;
 const DEFAULT_ONBOARDING_PHONE = "+000000000" as const;
+const OWNER_ROLE_NAME = "OWNER" as const;
+
+type RegistrationAction = "owner_assigned" | "user_deleted" | "error";
 
 function getRegistrationRedirectUri(request: Request): string {
   const explicitRegistrationUri = process.env.KEYCLOAK_REGISTRATION_REDIRECT_URI;
@@ -43,18 +53,32 @@ function getRegistrationRedirectUri(request: Request): string {
   return new URL("/api/auth/registrations/callback", request.url).toString();
 }
 
-function getEmailFromClaims(tokenSet: TokenSet): string | null {
+function getClaims(tokenSet: TokenSet): IdTokenClaims | null {
   try {
-    const claims = tokenSet.claims() as IdTokenClaims;
-
-    if (typeof claims.email === "string" && claims.email.length > 0) {
-      return claims.email;
-    }
-
-    return null;
+    return tokenSet.claims() as IdTokenClaims;
   } catch {
     return null;
   }
+}
+
+function getUserIdFromClaims(tokenSet: TokenSet): string | null {
+  const claims = getClaims(tokenSet);
+
+  if (!claims) {
+    return null;
+  }
+
+  return typeof claims.sub === "string" && claims.sub.length > 0 ? claims.sub : null;
+}
+
+function getEmailFromClaims(tokenSet: TokenSet): string | null {
+  const claims = getClaims(tokenSet);
+
+  if (!claims) {
+    return null;
+  }
+
+  return typeof claims.email === "string" && claims.email.length > 0 ? claims.email : null;
 }
 
 async function resolveUserEmail(client: InstanceType<(Awaited<ReturnType<typeof getOidcClient>>)["issuer"]["Client"]>, tokenSet: TokenSet): Promise<string | null> {
@@ -77,11 +101,32 @@ async function resolveUserEmail(client: InstanceType<(Awaited<ReturnType<typeof 
   return null;
 }
 
-async function executeOnboarding(email: string, accessToken: string): Promise<boolean> {
+function normalizeOnboardingResponse(payload: unknown): OnboardingResponse | null {
+  if (typeof payload !== "object" || payload === null) {
+    return null;
+  }
+
+  const candidate = payload as { academyId?: unknown; status?: unknown };
+
+  if (candidate.academyId !== null && typeof candidate.academyId !== "string") {
+    return null;
+  }
+
+  if (typeof candidate.status !== "string" || candidate.status.length === 0) {
+    return null;
+  }
+
+  return {
+    academyId: candidate.academyId ?? null,
+    status: candidate.status,
+  };
+}
+
+async function executeOnboarding(email: string, accessToken: string): Promise<OnboardingResponse | null> {
   const backendBaseUrl = process.env.BACKEND_BASE_URL;
 
   if (!backendBaseUrl) {
-    return false;
+    return null;
   }
 
   const payload: OnboardingPayload = {
@@ -101,25 +146,27 @@ async function executeOnboarding(email: string, accessToken: string): Promise<bo
   });
 
   if (!response.ok) {
-    return false;
+    return null;
   }
 
-  const rawResponse = await response.text();
+  const responsePayload = (await response.json()) as unknown;
+  return normalizeOnboardingResponse(responsePayload);
+}
 
-  if (rawResponse === "true") {
-    return true;
+function buildDestinationUrl(request: Request, params: {
+  status: string;
+  action: RegistrationAction;
+  academyId?: string | null;
+}): URL {
+  const destination = new URL("/", request.url);
+  destination.searchParams.set("registrationStatus", params.status);
+  destination.searchParams.set("registrationAction", params.action);
+
+  if (params.academyId) {
+    destination.searchParams.set("academyId", params.academyId);
   }
 
-  if (rawResponse === "false") {
-    return false;
-  }
-
-  try {
-    const responsePayload = JSON.parse(rawResponse) as unknown;
-    return responsePayload === true;
-  } catch {
-    return false;
-  }
+  return destination;
 }
 
 export async function GET(request: Request): Promise<Response> {
@@ -176,13 +223,56 @@ export async function GET(request: Request): Promise<Response> {
   };
 
   await setBffSession(session);
-  await clearOidcTransientCookies();
 
-  const email = await resolveUserEmail(client, tokenSet);
-  const onboardingResult = email ? await executeOnboarding(email, tokenSet.access_token) : false;
+  let destination = buildDestinationUrl(request, {
+    status: "ERROR",
+    action: "error",
+  });
 
-  const destination = new URL("/", request.url);
-  destination.searchParams.set("registrationResult", String(onboardingResult));
+  try {
+    const email = await resolveUserEmail(client, tokenSet);
+    const userId = getUserIdFromClaims(tokenSet);
 
-  return NextResponse.redirect(destination, { status: 302 });
+    if (!email || !userId) {
+      return NextResponse.redirect(destination, { status: 302 });
+    }
+
+    const onboardingResult = await executeOnboarding(email, tokenSet.access_token);
+
+    if (!onboardingResult) {
+      return NextResponse.redirect(destination, { status: 302 });
+    }
+
+    if (onboardingResult.status === "COMPLETED") {
+      const roleAssigned = await assignRealmRoleToUser(userId, OWNER_ROLE_NAME);
+
+      if (!roleAssigned) {
+        return NextResponse.redirect(destination, { status: 302 });
+      }
+
+      destination = buildDestinationUrl(request, {
+        status: onboardingResult.status,
+        action: "owner_assigned",
+        academyId: onboardingResult.academyId,
+      });
+
+      return NextResponse.redirect(destination, { status: 302 });
+    }
+
+    const userDeleted = await deleteKeycloakUser(userId);
+
+    if (!userDeleted) {
+      return NextResponse.redirect(destination, { status: 302 });
+    }
+
+    destination = buildDestinationUrl(request, {
+      status: onboardingResult.status,
+      action: "user_deleted",
+      academyId: onboardingResult.academyId,
+    });
+
+    return NextResponse.redirect(destination, { status: 302 });
+  } finally {
+    await clearOidcTransientCookies();
+  }
 }

@@ -4,6 +4,15 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-03-06
+### Added
+- Helper `src/app/lib/auth/keycloakAdmin.ts` para operaciones administrativas en Keycloak (token admin, lookup de rol realm, asignación de rol y borrado de usuario).
+- Documento `docs/11-owner-role-or-user-delete-after-onboarding.md` con la explicación del flujo condicional post-registro.
+
+### Changed
+- `GET /api/auth/registrations/callback` ahora procesa onboarding con contrato `{ academyId, status }`, extrae `sub` como `userId`, asigna `OWNER` cuando `status=COMPLETED` y elimina el usuario cuando el estado no es `COMPLETED`.
+- La home muestra resultado detallado del registro vía `registrationStatus`, `registrationAction` y `academyId`.
+
 ## [0.1.4] - 2026-03-06
 ### Fixed
 - Corrección en `GET /api/auth/registrations` para normalizar el issuer con slash final antes de construir la URL de Keycloak registrations, evitando perder el segmento del realm cuando el issuer viene sin `/` al final.

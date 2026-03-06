@@ -32,7 +32,9 @@ const sections = [
 
 type HomeProps = {
   searchParams: Promise<{
-    registrationResult?: string;
+    registrationStatus?: string;
+    registrationAction?: string;
+    academyId?: string;
   }>;
 };
 
@@ -41,7 +43,11 @@ export default async function Home({ searchParams }: HomeProps) {
 
   return (
     <div className="bg-slate-50 text-slate-900">
-      <RegistrationResultAlert registrationResult={params.registrationResult ?? null} />
+      <RegistrationResultAlert
+        registrationStatus={params.registrationStatus ?? null}
+        registrationAction={params.registrationAction ?? null}
+        academyId={params.academyId ?? null}
+      />
       <LandingNavbar />
 
       <main>

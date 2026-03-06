@@ -3,17 +3,42 @@
 import { useEffect } from "react";
 
 type RegistrationResultAlertProps = {
-  registrationResult: string | null;
+  registrationStatus: string | null;
+  registrationAction: string | null;
+  academyId: string | null;
 };
 
-export function RegistrationResultAlert({ registrationResult }: RegistrationResultAlertProps) {
+function buildRegistrationMessage(params: RegistrationResultAlertProps): string | null {
+  if (!params.registrationStatus || !params.registrationAction) {
+    return null;
+  }
+
+  if (params.registrationAction === "owner_assigned") {
+    const academySuffix = params.academyId ? ` (academyId: ${params.academyId})` : "";
+    return `Registration completed and OWNER role assigned.${academySuffix}`;
+  }
+
+  if (params.registrationAction === "user_deleted") {
+    return `Registration status ${params.registrationStatus}. User removed from Keycloak.`;
+  }
+
+  if (params.registrationAction === "error") {
+    return "Registration flow failed. Please contact support.";
+  }
+
+  return null;
+}
+
+export function RegistrationResultAlert({ registrationStatus, registrationAction, academyId }: RegistrationResultAlertProps) {
   useEffect(() => {
-    if (registrationResult !== "true" && registrationResult !== "false") {
+    const message = buildRegistrationMessage({ registrationStatus, registrationAction, academyId });
+
+    if (!message) {
       return;
     }
 
-    alert(`Registration result: ${registrationResult}`);
-  }, [registrationResult]);
+    alert(message);
+  }, [registrationStatus, registrationAction, academyId]);
 
   return null;
 }
