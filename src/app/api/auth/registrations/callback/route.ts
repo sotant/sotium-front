@@ -158,7 +158,7 @@ function buildDestinationUrl(request: Request, params: {
   action: RegistrationAction;
   academyId?: string | null;
 }): URL {
-  const destination = new URL("/", request.url);
+  const destination = new URL("/dashboard", request.url);
   destination.searchParams.set("registrationStatus", params.status);
   destination.searchParams.set("registrationAction", params.action);
 

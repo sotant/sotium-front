@@ -4,6 +4,15 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-03-06
+### Added
+- Documento `docs/12-registration-result-shown-in-dashboard.md` con la explicación del cambio de UX post-registro.
+
+### Changed
+- `GET /api/auth/registrations/callback` ahora redirige a `/dashboard` con `registrationStatus`, `registrationAction` y `academyId` en query params.
+- `app/(protected)/dashboard/page.tsx` ahora muestra el resultado del registro en la propia vista de dashboard mediante una tarjeta informativa.
+- `app/page.tsx` deja de leer query params de registro y se elimina el componente `RegistrationResultAlert` de la home.
+
 ## [0.1.5] - 2026-03-06
 ### Added
 - Helper `src/app/lib/auth/keycloakAdmin.ts` para operaciones administrativas en Keycloak (token admin, lookup de rol realm, asignación de rol y borrado de usuario).
