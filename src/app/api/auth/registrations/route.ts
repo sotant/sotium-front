@@ -4,7 +4,7 @@ import { setOidcTransientCookies } from "@/app/lib/auth/oidcCookies";
 import { buildAuthorizationUrl, createAuthorizationRequest } from "@/app/lib/auth/oidcAuthorization";
 import { getOidcClient } from "@/app/lib/auth/oidcClient";
 
-const KEYCLOAK_REGISTRATION_PATH = "/protocol/openid-connect/registrations" as const;
+const KEYCLOAK_REGISTRATION_PATH = "protocol/openid-connect/registrations" as const;
 
 function resolveRegistrationEndpoint(issuer: URL): string {
   return new URL(KEYCLOAK_REGISTRATION_PATH, issuer).toString();

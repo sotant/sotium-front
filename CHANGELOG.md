@@ -4,6 +4,10 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-03-06
+### Fixed
+- Corrección en `GET /api/auth/registrations` para construir correctamente la URL de Keycloak registration conservando el segmento del realm (`/realms/...`).
+
 ## [0.1.1] - 2026-03-05
 ### Added
 - Botón `Register` en la home para iniciar el flujo de registro OIDC vía BFF.
