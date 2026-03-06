@@ -1,6 +1,8 @@
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { LandingSection } from "@/components/landing/LandingSection";
 
+import { RegistrationResultAlert } from "./components/landing/RegistrationResultAlert";
+
 const sections = [
   {
     id: "hero",
@@ -28,9 +30,18 @@ const sections = [
   },
 ] as const;
 
-export default function Home() {
+type HomeProps = {
+  searchParams: Promise<{
+    registrationResult?: string;
+  }>;
+};
+
+export default async function Home({ searchParams }: HomeProps) {
+  const params = await searchParams;
+
   return (
     <div className="bg-slate-50 text-slate-900">
+      <RegistrationResultAlert registrationResult={params.registrationResult ?? null} />
       <LandingNavbar />
 
       <main>

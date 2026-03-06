@@ -4,6 +4,18 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-03-05
+### Added
+- Botón `Register` en la home para iniciar el flujo de registro OIDC vía BFF.
+- Endpoint `GET /api/auth/registrations` para iniciar Authorization Code + PKCE apuntando al formulario de registro de Keycloak.
+- Endpoint `GET /api/auth/registrations/callback` para validar callback OIDC, resolver email, ejecutar onboarding y redirigir a `/?registrationResult=true|false`.
+- Componente cliente `RegistrationResultAlert` para mostrar el resultado del onboarding en un `alert` al volver a home.
+- Helper `oidcAuthorization` para reutilizar la construcción de `state`, PKCE y URL de autorización.
+- Documentación funcional del flujo de registro y onboarding en `/docs`.
+
+### Changed
+- Refactor mínimo del endpoint `GET /api/auth/login` para reutilizar helper compartido de autorización OIDC.
+
 ## [0.1.0] - 2026-02-26
 ### Added
 - Landing page inicial en `/` con cuatro secciones (`hero`, `features`, `documentation`, `pricing`) y contenido base.
