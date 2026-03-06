@@ -153,6 +153,34 @@ async function executeOnboarding(email: string, accessToken: string): Promise<On
   return normalizeOnboardingResponse(responsePayload);
 }
 
+function createBffSessionFromTokenSet(tokenSet: TokenSet): BffSession | null {
+  if (!tokenSet.access_token || !tokenSet.expires_in) {
+    return null;
+  }
+
+  return {
+    accessToken: tokenSet.access_token,
+    refreshToken: tokenSet.refresh_token,
+    idToken: tokenSet.id_token,
+    expiresAt: Date.now() + tokenSet.expires_in * 1000,
+  };
+}
+
+async function refreshTokenSetAfterRoleAssignment(
+  client: InstanceType<(Awaited<ReturnType<typeof getOidcClient>>)["issuer"]["Client"]>,
+  tokenSet: TokenSet,
+): Promise<TokenSet | null> {
+  if (!tokenSet.refresh_token) {
+    return null;
+  }
+
+  try {
+    return await client.refresh(tokenSet.refresh_token);
+  } catch {
+    return null;
+  }
+}
+
 function buildDestinationUrl(request: Request, params: {
   status: string;
   action: RegistrationAction;
@@ -215,15 +243,6 @@ export async function GET(request: Request): Promise<Response> {
     return new Response("OIDC token response is missing required fields.", { status: 500 });
   }
 
-  const session: BffSession = {
-    accessToken: tokenSet.access_token,
-    refreshToken: tokenSet.refresh_token,
-    idToken: tokenSet.id_token,
-    expiresAt: Date.now() + tokenSet.expires_in * 1000,
-  };
-
-  await setBffSession(session);
-
   let destination = buildDestinationUrl(request, {
     status: "ERROR",
     action: "error",
@@ -249,6 +268,16 @@ export async function GET(request: Request): Promise<Response> {
       if (!roleAssigned) {
         return NextResponse.redirect(destination, { status: 302 });
       }
+
+      const refreshedTokenSet = await refreshTokenSetAfterRoleAssignment(client, tokenSet);
+      const effectiveTokenSet = refreshedTokenSet ?? tokenSet;
+      const session = createBffSessionFromTokenSet(effectiveTokenSet);
+
+      if (!session) {
+        return NextResponse.redirect(destination, { status: 302 });
+      }
+
+      await setBffSession(session);
 
       destination = buildDestinationUrl(request, {
         status: onboardingResult.status,

@@ -4,6 +4,13 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-03-06
+### Fixed
+- `GET /api/auth/registrations/callback` ahora refresca el `TokenSet` tras asignar `OWNER` y guarda sesión BFF con el token actualizado para evitar rechazos inmediatos en `/api/identity/me` por claims de rol desfasados.
+
+### Added
+- Documento `docs/13-refresh-token-after-owner-assignment.md` con el detalle del ajuste post-registro.
+
 ## [0.1.6] - 2026-03-06
 ### Added
 - Documento `docs/12-registration-result-shown-in-dashboard.md` con la explicación del cambio de UX post-registro.
