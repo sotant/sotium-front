@@ -4,6 +4,20 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-03-07
+### Added
+- Estructura FSD base en `src/pages`, `src/widgets`, `src/features`, `src/entities` y `src/shared` para landing y dashboard.
+- Capa BFF dedicada en `src/bff` con cliente Java centralizado, mappers y servicios de identidad/onboarding.
+- Documento `docs/14-fsd-bff-architecture-alignment.md` con la justificación e impacto del cambio.
+
+### Changed
+- `app/page.tsx` y `app/(protected)/dashboard/page.tsx` ahora delegan composición y presentación a la capa `pages`.
+- `GET /api/bff/me` delega integración externa al servicio `src/bff/services/identity.service.ts`.
+- `GET /api/auth/registrations/callback` delega la llamada de onboarding al servicio `src/bff/services/onboarding.service.ts`.
+
+### Removed
+- Componentes y utilidades legacy fuera de la estructura FSD que quedaron reemplazados por la nueva organización.
+
 ## [0.1.7] - 2026-03-06
 ### Fixed
 - `GET /api/auth/registrations/callback` ahora refresca el `TokenSet` tras asignar `OWNER` y guarda sesión BFF con el token actualizado para evitar rechazos inmediatos en `/api/identity/me` por claims de rol desfasados.

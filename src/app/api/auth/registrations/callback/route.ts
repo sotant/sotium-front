@@ -6,6 +6,7 @@ import { OIDC_STATE_COOKIE, OIDC_VERIFIER_COOKIE, clearOidcTransientCookies } fr
 import { deleteKeycloakUser, assignRealmRoleToUser } from "@/app/lib/auth/keycloakAdmin";
 import { getOidcClient } from "@/app/lib/auth/oidcClient";
 import { setBffSession, type BffSession } from "@/app/lib/auth/session";
+import { executeOnboarding } from "@/bff/services/onboarding.service";
 
 type CallbackParams = {
   code: string;
@@ -13,20 +14,9 @@ type CallbackParams = {
   iss?: string;
 };
 
-type OnboardingPayload = {
-  name: string;
-  email: string;
-  phone: string;
-};
-
 type IdTokenClaims = {
   email?: unknown;
   sub?: unknown;
-};
-
-type OnboardingResponse = {
-  academyId: string | null;
-  status: string;
 };
 
 const DEFAULT_ONBOARDING_NAME = "Dummy Academy" as const;
@@ -99,58 +89,6 @@ async function resolveUserEmail(client: InstanceType<(Awaited<ReturnType<typeof 
   }
 
   return null;
-}
-
-function normalizeOnboardingResponse(payload: unknown): OnboardingResponse | null {
-  if (typeof payload !== "object" || payload === null) {
-    return null;
-  }
-
-  const candidate = payload as { academyId?: unknown; status?: unknown };
-
-  if (candidate.academyId !== null && typeof candidate.academyId !== "string") {
-    return null;
-  }
-
-  if (typeof candidate.status !== "string" || candidate.status.length === 0) {
-    return null;
-  }
-
-  return {
-    academyId: candidate.academyId ?? null,
-    status: candidate.status,
-  };
-}
-
-async function executeOnboarding(email: string, accessToken: string): Promise<OnboardingResponse | null> {
-  const backendBaseUrl = process.env.BACKEND_BASE_URL;
-
-  if (!backendBaseUrl) {
-    return null;
-  }
-
-  const payload: OnboardingPayload = {
-    name: DEFAULT_ONBOARDING_NAME,
-    email,
-    phone: DEFAULT_ONBOARDING_PHONE,
-  };
-
-  const response = await fetch(`${backendBaseUrl}/api/onboarding/academies`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(payload),
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    return null;
-  }
-
-  const responsePayload = (await response.json()) as unknown;
-  return normalizeOnboardingResponse(responsePayload);
 }
 
 function createBffSessionFromTokenSet(tokenSet: TokenSet): BffSession | null {
@@ -256,7 +194,12 @@ export async function GET(request: Request): Promise<Response> {
       return NextResponse.redirect(destination, { status: 302 });
     }
 
-    const onboardingResult = await executeOnboarding(email, tokenSet.access_token);
+    const onboardingResult = await executeOnboarding({
+      email,
+      accessToken: tokenSet.access_token,
+      defaultName: DEFAULT_ONBOARDING_NAME,
+      defaultPhone: DEFAULT_ONBOARDING_PHONE,
+    });
 
     if (!onboardingResult) {
       return NextResponse.redirect(destination, { status: 302 });
