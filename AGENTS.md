@@ -263,6 +263,46 @@ Los agentes NO deben:
 
 ---
 
+### 11. Reglas de arquitectura
+
+### 11.1. Frontend (React + Feature-Sliced Design)
+Se utiliza la metodología **Feature-Sliced Design (FSD)** para organizar el código en `src/`.
+- **Regla de Importación:** Un módulo solo puede importar de capas inferiores, nunca de capas superiores o del mismo nivel (salvo en `shared`).
+- **Capas (Layers):**
+  - `app/`: Configuración global, estilos y providers.
+  - `pages/`: Composición de pantallas.
+  - `widgets/`: Componentes complejos y autónomos (ej. `CalendarGrid`, `Sidebar`).
+  - `features/`: Acciones del usuario que aportan valor de negocio (ej. `EnrollStudent`, `SubmitExam`).
+  - `entities/`: Modelos de datos y lógica mínima de entidad (ej. `User`, `Course`, `Grade`).
+  - `shared/`: UI genérica (uikit), utilidades de API y constantes.
+
+### 11.2. BFF (Backend for Frontend - Next.js)
+El BFF es el único que se comunica con el Backend de Java.
+- **Ubicación:** Rutas en `src/app/api/` y lógica de orquestación en `src/bff/`.
+- **Responsabilidades:**
+  - **Mappers:** Transformar los DTOs complejos de Java en modelos simplificados para el Front.
+  - **Agregación:** Combinar múltiples llamadas a la API de Java en una sola respuesta para el Front.
+  - **Seguridad:** Intercambiar el `Authorization Code` de Keycloak por tokens.
+- **PROHIBICIÓN:** El Frontend tiene estrictamente prohibido llamar directamente a la URL de Spring Boot. Siempre debe usar `/api/...` del BFF.
+
+### 11.3. Seguridad y Autenticación (Keycloak + OIDC)
+- **Flujo:** Authorization Code Flow con PKCE gestionado por el BFF.
+- **Gestión de Tokens:** - El BFF es un **Confidential Client**.
+  - Los Access Tokens (JWT) **NUNCA** deben enviarse al navegador ni guardarse en `localStorage`/`sessionStorage`.
+  - La sesión entre Navegador y BFF se gestiona mediante **Cookies httpOnly, Secure y SameSite=Lax**.
+- **Backend (Java):** Actúa como **Resource Server**, validando el JWT enviado por el BFF en el header `Authorization: Bearer <token>`.
+
+### 11.4. Stack Tecnológico Preferido
+- **Estado del Servidor:** TanStack Query (React Query).
+- **Validación:** Zod para esquemas de formularios y respuestas de API.
+- **UI:** Tailwind CSS + Radix UI (o Shadcn/ui).
+- **Comunicación BFF-Java:** Cliente centralizado en `src/bff/clients/java.client.ts`.
+
+Al desarrollar una nueva funcionalidad, el agente debe:
+1. Definir la **Entidad** en el front.
+2. Crear el **Endpoint en el BFF** con su respectivo **Mapper** para procesar la respuesta de Java.
+3. Implementar la **Feature** o **Widget** en el front utilizando `useQuery` o `useMutation` apuntando al BFF.
+
 ## Regla final
 
 Ante cualquier ambigüedad, inconsistencia o duda:
