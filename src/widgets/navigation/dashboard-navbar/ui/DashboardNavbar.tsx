@@ -1,4 +1,11 @@
-const dashboardMenuItems = ["Users", "Classes", "Documentation", "Calendar"] as const;
+import Link from "next/link";
+
+const dashboardMenuItems = [
+  { label: "Users", href: "/users" },
+  { label: "Classes" },
+  { label: "Documentation" },
+  { label: "Calendar" },
+] as const;
 
 export function DashboardNavbar() {
   return (
@@ -7,8 +14,14 @@ export function DashboardNavbar() {
         <nav aria-label="Dashboard sections">
           <ul className="flex items-center gap-6 text-sm font-medium text-slate-700">
             {dashboardMenuItems.map((item) => (
-              <li key={item}>
-                <span className="cursor-default">{item}</span>
+              <li key={item.label}>
+                {item.href ? (
+                  <Link className="hover:text-slate-900" href={item.href}>
+                    {item.label}
+                  </Link>
+                ) : (
+                  <span className="cursor-default">{item.label}</span>
+                )}
               </li>
             ))}
           </ul>

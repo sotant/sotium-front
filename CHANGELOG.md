@@ -4,6 +4,16 @@ Todos los cambios de este proyecto se documentarán en este archivo siguiendo el
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-03-07
+### Added
+- Nueva ruta protegida `/users` con listado SSR de usuarios de la academia y composición en la capa `src/pages/users`.
+- Endpoint BFF `GET /api/bff/users` con servicio y mapper dedicados para consumir el backend Java y normalizar `PublicUserResponse`.
+- Documentación `docs/15-users-menu-and-list.md` con detalle funcional y de arquitectura del cambio.
+
+### Changed
+- El item `Users` del `DashboardNavbar` ahora navega a `/users`.
+- `middleware.ts` ahora protege también `/users/:path*`.
+
 ## [0.1.8] - 2026-03-07
 ### Added
 - Estructura FSD base en `src/pages`, `src/widgets`, `src/features`, `src/entities` y `src/shared` para landing y dashboard.
