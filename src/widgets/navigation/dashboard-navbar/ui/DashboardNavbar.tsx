@@ -14,8 +14,6 @@ export function DashboardNavbar() {
           </ul>
         </nav>
 
-        {/* Submit logout as a native browser POST to avoid action/fetch redirect
-            chains that can make cross-origin cookie clearing less reliable. */}
         <form method="post" action="/api/auth/logout">
           <button
             type="submit"

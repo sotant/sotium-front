@@ -1,4 +1,4 @@
-export type IdentityMeDto = {
+export type Identity = {
   sub: string;
   email: string;
   authorities: string[];
